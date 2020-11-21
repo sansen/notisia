@@ -13,7 +13,7 @@ class Database:
         self.conn.execute(
             'CREATE TABLE IF NOT EXISTS noticias ' +
             '(noticia_id text PRIMARY KEY, ' +
-            'title text, body text, media text, fecha text)'
+            'title text, body text, author text, media text, fecha text)'
         )
         # Save (commit) the changes
         self.conn.commit()
@@ -38,6 +38,24 @@ class Database:
             'SELECT noticia_id, fecha FROM noticias where media = ?', (site,)
         )
         return noticias
+
+    def search(self, site, query):
+        cur = self.conn.cursor()
+        cur.execute(
+            "SELECT noticia_id, fecha, media FROM noticias where media = ? "+
+            "AND (noticia_id LIKE ? OR author LIKE ? OR title LIKE ?)",
+            (site, '%'+query+'%', '%'+query+'%', '%'+query+'%',)
+        )
+        rows = cur.fetchall()
+        return rows
+
+    def update_new(self, noticia_id, titulo, cuerpo, autor):
+        cur = self.conn.cursor()
+        cur.execute(
+            "UPDATE noticias SET title = ?, body = ?, author= ? "+
+            "WHERE noticia_id = ?",
+            (titulo, cuerpo, autor, noticia_id,)
+        )
 
     def close_connection(self):
         # We can also close the connection if we are done with it.
