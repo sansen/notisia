@@ -2,8 +2,8 @@ import re
 import time
 import requests
 
-from bs4 import BeautifulSoup
 from bs4 import Comment
+from bs4 import BeautifulSoup
 
 
 class Site:
@@ -27,12 +27,14 @@ class Site:
         links_noticias = portada.select(self.site_fields['front_links'])
         for l in links_noticias:
             l = l.get('href')
+            if not l:
+                continue
+
             if not l.startswith('https://') and \
                not l.startswith('http://'):
                 l = self.site_fields['base_url'] + l
-
+            
             self.filter_links(l, links)
-            links.append(l)
 
         self.noticias_id = list(set(links))
         tmp_noticias_db = list(set(
@@ -68,11 +70,14 @@ class Site:
                 'uri': noticia_url
             }
 
+    def get_new(self, noticia_url):
+        return self.noticias[noticia_url]
+
     def retrieve_sections(self):
         pass
     
     def filter_links(self, link, links):
-        pass
+        links.append(link)
 
     def new_scrap_category(self, bs):
         # scrap category
@@ -130,16 +135,27 @@ class Site:
 class Clarin(Site):
     def filter_links(self, link, links):
         """Get news links from clarin.com portal."""
-        if re.search(r"\.html$", link):
+        if link.endswith('.html'):
             links.append(link)
 
 
 class Pagina(Site):
     def filter_links(self, link, links):
         """Get news links from pagina12.com portal."""
-        if link.startswith('https://www.pagina12.com.ar/') \
-           and not re.search(r"suplementos", link) \
-           and not re.search(r"opinion", link):
+        if link.startswith('https://www.pagina12.com.ar/') and 'suplementos' not in link \
+           and 'opinion' not in link:
+            links.append(link)
+
+class Telam(Site):
+    def filter_links(self, link, links):
+        """Get news links from telam.com.ar portal."""
+        if link.startswith('https://www.telam.com.ar//notas'):
+            links.append(link)
+
+class Cronica(Site):
+    def filter_links(self, link, links):
+        """Get news links from telam.com.ar portal."""
+        if link.startswith('https://www.cronica.com.ar/'):
             links.append(link)
 
 
@@ -147,8 +163,13 @@ class SiteFactory:
     def getSiteInstance(site, scrapi_fields):
         if site == 'clarin':
             site_instance = Clarin(site, scrapi_fields)
-        elif site == 'Pagina12':
+        elif site == 'pagina12':
             site_instance = Pagina(site, scrapi_fields)
+        elif site == 'telam':
+            site_instance = Telam(site, scrapi_fields)
+        elif site == 'cronica':
+            site_instance = Cronica(site, scrapi_fields)
+
         else:
             site_instance = Site(site, scrapi_fields)
         return site_instance
