@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright 2019-2020 Santiago Torres Batan
+# Copyright 2019-2025 Santiago Torres Batan
 
 import sys
 from itertools import islice
@@ -60,9 +60,9 @@ class Window(QtWidgets.QMainWindow):
 
 
         self.treewidget = QtWidgets.QTreeWidget()
-        self.treewidget.setColumnCount(2)
+        self.treewidget.setColumnCount(4)
         self.treewidget.setHeaderLabels(
-            ['Noticia', 'Fecha', 'Sitio']
+            ['Noticia', 'Author', 'Fecha', 'Sitio']
         )
         self.treewidget.itemClicked.connect(self.on_item_clicked)
         self.treewidget.itemClicked.connect(self.action_signal)
@@ -111,7 +111,7 @@ class Window(QtWidgets.QMainWindow):
 
     def on_item_clicked(self, it, col):
         self.currentItem = it
-        self.news_id = (it, it.text(2), it.text(0))
+        self.news_id = (it, it.text(3), it.toolTip(0))
         
     def set_items(self, items):
         self.cb.addItems([i for i in items.values()])
@@ -123,27 +123,39 @@ class Window(QtWidgets.QMainWindow):
         for link in noticias:
             try:
                 time = datetime.utcfromtimestamp(
-                    int(float(link[1]))).strftime('%d-%m-%Y'
+                    int(float(link[3]))).strftime('%d-%m-%Y'
                 )
             except Exception:
-                time = link[1]
+                time = link[3]
             item = QtWidgets.QTreeWidgetItem(self.treewidget)
-            item.setText(0, f"{link[0]}")
-            item.setText(1, f"{time}")
-            item.setToolTip(0, f"{link[0]}")
-            item.setToolTip(1, f"{time}")
 
-            if site_name != None:
-                item.setText(2, f"{site_name}")
-                item.setToolTip(2, f"{site_name}")
+            # title
+            if link[1]:
+                item.setText(0, f"{link[1]}")
             else:
-                item.setText(2, f"{link[2]}")
-                item.setToolTip(2, f"{link[2]}")
+                item.setText(0, f"{link[0]}")
+            item.setToolTip(0, f"{link[0]}")
+
+            # author
+            item.setText(1, f"{link[2]}")
+            item.setToolTip(1, f"{link[2]}")
+
+            # fecha
+            item.setText(2, f"{time}")
+            item.setToolTip(2, f"{time}")
+
+            # site_key
+            if site_name != None:
+                item.setText(3, f"{site_name}")
+                item.setToolTip(3, f"{site_name}")
+            else:
+                item.setText(3, f"{link[4]}")
+                item.setToolTip(3, f"{link[4]}")
 
         header = self.treewidget.header()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setStretchLastSection(False)
-        self.treewidget.sortItems(1, QtCore.Qt.DescendingOrder)
+        self.treewidget.sortItems(2, QtCore.Qt.DescendingOrder)
 
     def fill_news_pane(self, noticia):
         self.sidepane.setText(f"{noticia['title']}\n\n{noticia['body']}")

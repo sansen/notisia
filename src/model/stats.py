@@ -20,18 +20,18 @@ class Stats:
 
     def _step_words(self):
         return [
-            '', 'a', 'ante', 'bajo', 'cabe', 'e', 'cada', 'sea',
-            'con', 'contra', 'de', 'desde', 'durante', 'en', 'estos'
-            'entre', 'hacia', 'hasta', 'mediante', 'para', 'por',
-            'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía',
+            '', '"', '“', '”', 'a', 'ante', 'bajo', 'cabe', 'e', 'cada', 'sea',
+            'con', 'contra', 'de', 'desde', 'durante', 'en', 'estos', 'ya',
+            'entre', 'hacia', 'hasta', 'mediante', 'para', 'por', '%',
+            'según', 'sin', 'so', 'sobre', 'tras', 'versus', 'vía', 'parece',
             'el', 'un', 'la', 'una', 'lo', 'los', 'unos', 'las', 'son',
             'unas', 'pero', 'tambien', 'y', 'te', 'que', 'del', 'al',
             'se', 'le', 'les', 'es', 'sus', 'del', 'no', 'este', 'nunca',
             'mas', 'porque', 'cuando', 'ese', 'este', 'su', 'esos', 'fue',
             'como', 'tiene', 'muy', 'o', 'más', '|', 'me', 'mi', 'eso',
             'mucho', 'ha', 'esta', '$', 'nos', 'ser', 'tu', 'vos', 'si',
-            'sino', 'también', 'puede', '+', '-', 'hay', 'está',
-            'estaba', 'era', 'esa', 'ella'
+            'sino', 'también', 'puede', '+', '-', 'hay', 'está', 'estas',
+            'estaba', 'era', 'esa', 'ella', 'tipo', 'mis', 'todo', 'donde'
         ]
 
     def _sentences_count(self, news_content):
@@ -42,7 +42,6 @@ class Stats:
         paragraphs = news_content.split('\n')
         paragraphs = [ p for p in paragraphs if len(p)>0 and p != ' ']
         return len(paragraphs)
-
 
     def _word_freq(self, news_content):
         """Compute word Frequency of new."""

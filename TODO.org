@@ -1,0 +1,27 @@
+* TODO GUI [0/7]
+** TODO Mejorar Paneles. Que sean desplegables
+** TODO Mejorar Despligue de informacion
+** TODO Agregar botones Fullscreen, abrir noticia en browser, abrir categoria, abrir diario, abrir autor
+** TODO Agregar cantidad de resultados
+** TODO Agregar configuracion
+** TODO Mejores visualizacion del cuerpo de la noticia
+** TODO Posibilidad de seleccionar Autores destacados
+* TODO Modelo [0/5]
+** TODO Mejorar/Comentar codigo
+** TODO Creacion de cache
+** TODO Creacion de debug
+** TODO Mejorar esquema base de datos. ID por HASH
+** TODO Crear scipt cron para popular la base datos
+* TODO Stats/IA [0/1]
+** TODO Realizar comparacion de similutud de titulos
+** TODO Comparacion de noticias
+* TODO Interfaz WEB [0/2]
+** TODO Implemetar API rest
+** TODO Implementar APP react
+* TODO WebScrapi [0/6]
+** TODO Crear Readme
+** TODO Corregir medios existentes
+** TODO Agregar medios
+** TODO Crear especificacion
+** TODO Generar BD
+** TODO Crear proyecto

@@ -22,31 +22,37 @@ class Site:
 
         r = requests.get(self.site_fields['base_url'])
         portada = BeautifulSoup(r.text, 'html.parser')
-        links = []
 
-        links_noticias = portada.select(self.site_fields['front_links'])
-        for l in links_noticias:
-            l = l.get('href')
-            if not l:
-                continue
-
-            if not l.startswith('https://') and \
-               not l.startswith('http://'):
-                l = self.site_fields['base_url'] + l
-            
-            self.filter_links(l, links)
-
-        self.noticias_id = list(set(links))
         tmp_noticias_db = list(set(
             [n_id[0] for n_id in self.noticias_db]
         ))
 
-        for item, noticia in enumerate(self.noticias_id):
-            if noticia not in tmp_noticias_db:
-                self.noticias_db.append([noticia, time.time()])
-        self.noticias_id = filter(
-            lambda x: x not in tmp_noticias_db, self.noticias_id
-        )
+        if self.site_fields['front_container']:
+            links_noticias = portada.select(self.site_fields['front_container'])
+
+            for n in links_noticias:
+                t=''
+                a=''
+                l = n.select_one(self.site_fields['front_container_link'])
+                if not l or l.get('href', '') == '':
+                    continue
+                else:
+                    l = l.get('href')
+
+                if n.select_one(self.site_fields['front_container_title']):
+                    t = n.select_one(self.site_fields['front_container_title']).text.strip()
+                if n.select_one(self.site_fields['front_container_author']):
+                    a = n.select_one(self.site_fields['front_container_author']).text.strip()
+
+
+                if not l.startswith('https://') and \
+                   not l.startswith('http://'):
+                    l = self.site_fields['base_url'] + l
+
+                if l not in tmp_noticias_db:
+                    self.noticias_db.append([l, t, a, time.time(), self.site])
+                    self.noticias_id.append(l)
+
 
     def retrieve_news(self, noticia_url):
         if noticia_url in self.noticias.keys():
@@ -75,7 +81,7 @@ class Site:
 
     def retrieve_sections(self):
         pass
-    
+
     def filter_links(self, link, links):
         links.append(link)
 
@@ -99,7 +105,7 @@ class Site:
         author_raw = bs.select(self.site_fields['new_author'])
         author_raw = author_raw[0].text if len(author_raw) > 0 \
             else self.site_fields['pretty_name']
-        return author_raw        
+        return author_raw
 
     def new_scrap_date(self, bs):
         # scrap date
@@ -149,7 +155,7 @@ class Pagina(Site):
 class Telam(Site):
     def filter_links(self, link, links):
         """Get news links from telam.com.ar portal."""
-        if link.startswith('https://www.telam.com.ar//notas'):
+        if link.startswith('https://www.telam.com.ar/notas'):
             links.append(link)
 
 class Cronica(Site):
@@ -169,7 +175,6 @@ class SiteFactory:
             site_instance = Telam(site, scrapi_fields)
         elif site == 'cronica':
             site_instance = Cronica(site, scrapi_fields)
-
         else:
             site_instance = Site(site, scrapi_fields)
         return site_instance

@@ -13,21 +13,25 @@ class Database:
         self.conn.execute(
             'CREATE TABLE IF NOT EXISTS noticias ' +
             '(noticia_id text PRIMARY KEY, ' +
-            'title text, body text, author text, media text, fecha text)'
+            'title text, ' +
+            'body text, ' +
+            'author text, ' +
+            'media text, ' +
+            'fecha text)'
         )
         # Save (commit) the changes
         self.conn.commit()
 
     def save_site(self, site):
         inserts = []
-        for noticia in site.noticias_id:
-            inserts.append((noticia, site.site, time.time()))
+        for noticia in site.noticias_db:
+            inserts.append((noticia[0], noticia[1], noticia[2], site.site, time.time()))
 
         # Create table
         self.conn.executemany(
-            'INSERT INTO noticias ' +
-            '(noticia_id, media, fecha) ' +
-            'VALUES (?, ?, ?)', inserts
+            'INSERT OR REPLACE INTO noticias ' +
+            '(noticia_id, title, author, media, fecha) ' +
+            'VALUES (?, ?, ?, ?, ?)', inserts
         )
         # Save (commit) the changes
         self.conn.commit()
@@ -35,26 +39,26 @@ class Database:
     def select_noticias_id(self, site):
         # Create table
         noticias = self.conn.execute(
-            'SELECT noticia_id, fecha FROM noticias where media = ?', (site,)
+            'SELECT noticia_id, title, author, fecha, media FROM noticias where media = ?', (site,)
         )
         return noticias
 
     def search(self, site, query):
         cur = self.conn.cursor()
         cur.execute(
-            "SELECT noticia_id, fecha, media FROM noticias where media = ? "+
+            "SELECT noticia_id, title, author, fecha, media FROM noticias where media = ? "+
             "AND (noticia_id LIKE ? OR author LIKE ? OR title LIKE ?)",
             (site, '%'+query+'%', '%'+query+'%', '%'+query+'%',)
         )
         rows = cur.fetchall()
         return rows
 
-    def update_new(self, noticia_id, titulo, cuerpo, autor):
+    def update_new(self, site, noticia_id, titulo, cuerpo, autor):
         cur = self.conn.cursor()
         cur.execute(
-            "UPDATE noticias SET title = ?, body = ?, author= ? "+
+            "UPDATE noticias SET body = ? "+
             "WHERE noticia_id = ?",
-            (titulo, cuerpo, autor, noticia_id,)
+            (cuerpo, noticia_id,)
         )
 
     def close_connection(self):

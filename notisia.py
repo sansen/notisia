@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright 2019-2020 Santiago Torres Batan
+# Copyright 2019-2025 Santiago Torres Batan
 
 """Notis IA.
 
@@ -41,7 +41,7 @@ def main(url):
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='Notis pre-alpha 1.0')
-    print(arguments)
+    # print(arguments)
 
     if arguments['--webscrapi'] is not None:
         url = arguments['<url>']
